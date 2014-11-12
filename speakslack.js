@@ -27,6 +27,50 @@ var talk = function (text)
     }
 }
 
+
+var speechUtteranceChunker = function (utt, settings, callback) {
+    settings = settings || {};
+    var chunkLength = settings && settings.chunkLength || 160;
+    var pattRegex = new RegExp('^.{' + Math.floor(chunkLength / 2) + ',' + chunkLength + '}[\.\!\?\,]{1}|^.{1,' + chunkLength + '}$|^.{1,' + chunkLength + '} ');
+    var txt = (settings && settings.offset !== undefined ? utt.text.substring(settings.offset) : utt.text);
+    var chunkArr = txt.match(pattRegex);
+
+    if (chunkArr[0] !== undefined && chunkArr[0].length > 2) {
+        var chunk = chunkArr[0];
+        var newUtt = new SpeechSynthesisUtterance(chunk);
+        for (x in utt) {
+            if (utt.hasOwnProperty(x) && x !== 'text') {
+                newUtt[x] = utt[x];
+            }
+        }
+        newUtt.onend = function () {
+            settings.offset = settings.offset || 0;
+            settings.offset += chunk.length - 1;
+            speechUtteranceChunker(utt, settings, callback);
+        }
+        console.log(newUtt); //IMPORTANT!! Do not remove
+        setTimeout(function () {
+            speechSynthesis.speak(newUtt);
+        }, 0);
+    } else {
+        if (callback !== undefined) {
+            callback();
+        }
+    }
+}
+
+function talk (text) {
+    var utterance = new SpeechSynthesisUtterance(text);
+    var voiceArr = speechSynthesis.getVoices();
+    utterance.voice = voiceArr[2];
+
+    speechUtteranceChunker(utterance, {
+        chunkLength: 120
+    }, function () {
+
+    });
+}
+
 setInterval(function() {
     
     if (!localStorage.lastMessage) {

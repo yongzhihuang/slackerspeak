@@ -1,33 +1,3 @@
-var voices = window.speechSynthesis.getVoices();
-
-var prepSynthesizer = function ()
-{
-    var msg = new SpeechSynthesisUtterance();
-
-    msg.voice = voices[10];
-    msg.voiceURI = 'native';
-    msg.volume = 1; 
-    msg.rate = 1;
-    msg.pitch = 2;
-    msg.lang = 'en-GB';
-    return msg;
-}
-
-
-var talk = function (text)
-{
-    speechSynthesis.cancel(); 
-
-    var sentences = text.split(".");
-    for (var i=0;i< sentences.length;i++)
-    {
-        var toSay = prepSynthesizer();
-        toSay.text = sentences[i];
-        speechSynthesis.speak(toSay);
-    }
-}
-
-
 var speechUtteranceChunker = function (utt, settings, callback) {
     settings = settings || {};
     var chunkLength = settings && settings.chunkLength || 160;
@@ -78,7 +48,13 @@ setInterval(function() {
         var latestmsg = $('.message').last().find('.message_content').text().trim();
 
         if (latestmsg.length <= 180){
+        
+            var urlPattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
+            if (latestmsg.match(urlPattern) && latestmsg.match(urlPattern)[0]) {
+                latestmsg = latestmsg.replace(latestmsg.match(urlPattern)[0], author + ' shared a link');
+            }
             talk(author + ' said ' + latestmsg);
+
         }
 
         localStorage.lastMessage = latestmsg;
@@ -87,7 +63,13 @@ setInterval(function() {
         var latestmsg = $('.message').last().find('.message_content').text().trim();
         if (latestmsg !== localStorage.lastMessage) {
             if (latestmsg.length <= 180){
+            
+                var urlPattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
+                if (latestmsg.match(urlPattern) && latestmsg.match(urlPattern)[0]) {
+                    latestmsg = latestmsg.replace(latestmsg.match(urlPattern)[0], author + ' shared a link');
+                }
                 talk(author + ' said ' + latestmsg);
+
             }
             localStorage.lastMessage = latestmsg;
         }

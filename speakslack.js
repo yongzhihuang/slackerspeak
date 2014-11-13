@@ -30,7 +30,7 @@ var speechUtteranceChunker = function (utt, settings, callback) {
 }
 
 function talk (text) {
-    speechSynthesis.cancel();
+
     var utterance = new SpeechSynthesisUtterance(text);
     var voiceArr = speechSynthesis.getVoices();
     utterance.voice = voiceArr[2];
@@ -43,7 +43,7 @@ function talk (text) {
 }
 
 setInterval(function() {
-    
+        speechSynthesis.cancel();
     if (!localStorage.lastMessage) {
         var author = $('.message').last().find('.message_sender').text().trim();
         var latestmsg = $('.message').last().find('.message_content').text().trim();

@@ -30,6 +30,7 @@ var speechUtteranceChunker = function (utt, settings, callback) {
 }
 
 function talk (text) {
+    speechSynthesis.cancel();
     var utterance = new SpeechSynthesisUtterance(text);
     var voiceArr = speechSynthesis.getVoices();
     utterance.voice = voiceArr[2];
@@ -47,30 +48,26 @@ setInterval(function() {
         var author = $('.message').last().find('.message_sender').text().trim();
         var latestmsg = $('.message').last().find('.message_content').text().trim();
 
-        if (latestmsg.length <= 180){
         
-            var urlPattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
-            if (latestmsg.match(urlPattern) && latestmsg.match(urlPattern)[0]) {
-                latestmsg = latestmsg.replace(latestmsg.match(urlPattern)[0], author + ' shared a link');
-            }
-            talk(author + ' said ' + latestmsg);
-
+        var urlPattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
+        if (latestmsg.match(urlPattern) && latestmsg.match(urlPattern)[0]) {
+            latestmsg = latestmsg.replace(latestmsg.match(urlPattern)[0], author + ' shared a link');
         }
+        talk(author + ' said ' + latestmsg);
+
 
         localStorage.lastMessage = latestmsg;
     } else {
         var author = $('.message').last().find('.message_sender').text().trim();
         var latestmsg = $('.message').last().find('.message_content').text().trim();
         if (latestmsg !== localStorage.lastMessage) {
-            if (latestmsg.length <= 180){
             
-                var urlPattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
-                if (latestmsg.match(urlPattern) && latestmsg.match(urlPattern)[0]) {
-                    latestmsg = latestmsg.replace(latestmsg.match(urlPattern)[0], author + ' shared a link');
-                }
-                talk(author + ' said ' + latestmsg);
-
+            var urlPattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
+            if (latestmsg.match(urlPattern) && latestmsg.match(urlPattern)[0]) {
+                latestmsg = latestmsg.replace(latestmsg.match(urlPattern)[0], author + ' shared a link');
             }
+            talk(author + ' said ' + latestmsg);
+
             localStorage.lastMessage = latestmsg;
         }
     }
